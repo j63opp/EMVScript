@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const doc = new jsPDF();
     let y = 10;
 
-    doc.setFont("helvetica"); // Set a standard font to avoid encoding issues
+    doc.setFont("helvetica"); // Ensure a consistent font
     doc.text("EMV Application Testing Checklist", 10, y);
     y += 10;
 
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         doc.text(section.category, 10, y);
         y += 10;
         section.tests.forEach(test => {
-            const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]"; // ASCII checkboxes
+            const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]"; // Use ASCII checkboxes
             doc.text(`${checkboxMark} ${test}`, 15, y);
             y += 7;
         });
