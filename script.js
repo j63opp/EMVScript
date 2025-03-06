@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     downloadButton.addEventListener("click", generatePDF);
     document.body.appendChild(downloadButton);
 
-    const checkboxes = {};
+    const checkboxes = {}; // Store references to checkboxes
 
     testCases.forEach(section => {
         const sectionDiv = document.createElement("div");
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const label = document.createElement("label");
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkboxes[test] = checkbox;
+            checkboxes[test] = checkbox; // Store reference to checkbox
 
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + test));
@@ -67,8 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
             doc.text(section.category, 10, y);
             y += 10;
             section.tests.forEach(test => {
-                const checkboxMark = checkboxes[test].checked ? "[✔]" : "[ ]";
-                doc.text(`${checkboxMark} ${test}`, 15, y);
+                const isChecked = checkboxes[test]?.checked ? "[✔]" : "[ ]"; // Ensure checkbox state is captured
+                doc.text(`${isChecked} ${test}`, 15, y);
                 y += 7;
             });
             y += 5;
