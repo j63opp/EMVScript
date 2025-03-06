@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
     downloadButton.addEventListener("click", generatePDF);
     document.body.appendChild(downloadButton);
 
+    const checkboxesState = {};
+
     testCases.forEach(section => {
         const sectionDiv = document.createElement("div");
         sectionDiv.innerHTML = `<h2>${section.category}</h2>`;
@@ -42,6 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const label = document.createElement("label");
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.addEventListener("change", () => {
+                checkboxesState[test] = checkbox.checked;
+            });
 
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + test));
@@ -64,7 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
             doc.text(section.category, 10, y);
             y += 10;
             section.tests.forEach(test => {
-                doc.text("- " + test, 15, y);
+                const checkboxMark = checkboxesState[test] ? "[✔]" : "[ ]";
+                doc.text(`${checkboxMark} ${test}`, 15, y); // Adds checked or unchecked marker
                 y += 7;
             });
             y += 5;
