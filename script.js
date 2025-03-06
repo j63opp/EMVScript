@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const checklistContainer = document.getElementById("checklist");
+    const downloadButton = document.createElement("button");
+    downloadButton.textContent = "Download PDF";
+    downloadButton.addEventListener("click", generatePDF);
+    document.body.appendChild(downloadButton);
 
     testCases.forEach(section => {
         const sectionDiv = document.createElement("div");
@@ -47,4 +51,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
         checklistContainer.appendChild(sectionDiv);
     });
+
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 10;
+
+        doc.text("EMV Application Testing Checklist", 10, y);
+        y += 10;
+
+        testCases.forEach(section => {
+            doc.text(section.category, 10, y);
+            y += 10;
+            section.tests.forEach(test => {
+                doc.text("- " + test, 15, y);
+                y += 7;
+            });
+            y += 5;
+        });
+
+        doc.save("EMV_Testing_Checklist.pdf");
+    }
 });
