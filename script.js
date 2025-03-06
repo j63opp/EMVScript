@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         doc.text(section.category, 10, y);
         y += 10;
         section.tests.forEach(test => {
-            const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]"; // Use ASCII checkboxes
+            const checkboxMark = checkboxes[test].checked ? "X" : "[ ]"; // Use ASCII checkboxes
             doc.text(`${checkboxMark} ${test}`, 15, y);
             y += 7;
         });
