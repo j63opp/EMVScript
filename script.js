@@ -33,23 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
     infoContainer.id = "info-container";
     document.body.prepend(infoContainer);
 
-    const nameInput = document.createElement("input");
-    nameInput.type = "text";
-    nameInput.placeholder = "Enter QA Name";
-    nameInput.style.display = "block";
-    nameInput.style.marginBottom = "10px";
-    document.body.prepend(nameInput);
-
-    const downloadButton = document.createElement("button");
-    downloadButton.textContent = "Download PDF";
-    downloadButton.disabled = true;
-    downloadButton.addEventListener("click", generatePDF);
-    document.body.appendChild(downloadButton);
-
-    nameInput.addEventListener("input", function () {
-        downloadButton.disabled = nameInput.value.trim() === "";
-    });
-
     async function updateInfo() {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
@@ -69,6 +52,22 @@ document.addEventListener("DOMContentLoaded", function () {
             <p><strong>Device/Public IP:</strong> ${computerName}</p>
         `;
     }
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "Enter QA Name";
+    nameInput.style.display = "block";
+    nameInput.style.marginBottom = "10px";
+    document.body.prepend(nameInput);
+
+    const downloadButton = document.createElement("button");
+    downloadButton.textContent = "Download PDF";
+    downloadButton.disabled = true;
+    downloadButton.addEventListener("click", generatePDF);
+    document.body.appendChild(downloadButton);
+
+    nameInput.addEventListener("input", function () {
+        downloadButton.disabled = nameInput.value.trim() === "";
+    });
     updateInfo();
 
     const completionStatus = document.createElement("p");
