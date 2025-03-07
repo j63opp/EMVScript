@@ -60,6 +60,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const doc = new jsPDF();
         let y = 10;
 
+        // Add date, time, and computer name at the top
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const computerName = window.navigator.userAgent; // Limited browser info as hostname isn't accessible via JS
+        
+        doc.text(`Date: ${currentDate} Time: ${currentTime}`, 10, y);
+        y += 7;
+        doc.text(`Device: ${computerName}`, 10, y);
+        y += 10;
+
         doc.setFont("helvetica");
         doc.text("EMV Application Testing Checklist", 10, y);
         y += 10;
@@ -74,14 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             y += 5;
         });
-
-        // Add date, time, and computer name at the bottom
-        const currentDate = new Date().toLocaleDateString();
-        const currentTime = new Date().toLocaleTimeString();
-        const computerName = window.navigator.userAgent; // Limited browser info as hostname isn't accessible via JS
-        
-        doc.text(`Date: ${currentDate} Time: ${currentTime}`, 10, 280);
-        doc.text(`Device: ${computerName}`, 10, 287);
 
         doc.save("EMV_Testing_Checklist.pdf");
     }
