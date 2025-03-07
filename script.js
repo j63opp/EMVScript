@@ -76,25 +76,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to fetch public IP with fallback APIs
     async function fetchPublicIP() {
-        const apiUrls = [
-            'https://api64.ipify.org?format=json', // Primary API
-            'https://api.ipify.org?format=json',   // Fallback API
-            'https://ipapi.co/json/'               // Another fallback API
-        ];
-
-        for (const url of apiUrls) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Network response was not ok");
-                const data = await response.json();
-                return data.ip || data.ipAddress || "Unable to fetch public IP";
-            } catch (error) {
-                console.error(`Error fetching public IP from ${url}:`, error);
-            }
-        }
-        return "Unable to fetch public IP";
-    }
-
+	    const apiUrls = [
+	        'https://api.ipify.org?format=json', // IPv4 by default
+	        'https://api4.ipify.org?format=json', // Explicitly IPv4
+	        'https://ipv4.seeip.org/json'         // Another IPv4 API
+	    ];
+	
+	    for (const url of apiUrls) {
+	        try {
+	            const response = await fetch(url);
+	            if (!response.ok) throw new Error("Network response was not ok");
+	            const data = await response.json();
+	            return data.ip || "Unable to fetch public IP";
+	        } catch (error) {
+	            console.error(`Error fetching public IP from ${url}:`, error);
+	        }
+	    }
+	    return "Unable to fetch public IP";
+	  }
     // Update the info container with date, time, and public IP
     async function updateInfo() {
         // Update date and time immediately
