@@ -33,6 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
     infoContainer.id = "info-container";
     document.body.prepend(infoContainer);
 
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.placeholder = "Enter QA Name";
+    nameInput.style.display = "block";
+    nameInput.style.marginBottom = "10px";
+    document.body.prepend(nameInput);
+
     async function updateInfo() {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
@@ -59,8 +66,26 @@ document.addEventListener("DOMContentLoaded", function () {
     downloadButton.addEventListener("click", generatePDF);
     document.body.appendChild(downloadButton);
 
+    const completionStatus = document.createElement("p");
+    completionStatus.id = "completion-status";
+    document.body.appendChild(completionStatus);
+
     const checkboxes = {};
     const notes = {};
+
+    function updateCompletionStatus() {
+        const totalItems = Object.keys(checkboxes).length;
+        let completedItems = 0;
+        
+        Object.keys(checkboxes).forEach(test => {
+            if (checkboxes[test].checked || notes[test].value.trim() !== "") {
+                completedItems++;
+            }
+        });
+        
+        const percentage = ((completedItems / totalItems) * 100).toFixed(2);
+        completionStatus.textContent = `Completion: ${percentage}%`;
+    }
 
     testCases.forEach(section => {
         const sectionDiv = document.createElement("div");
@@ -78,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkboxes[test] = checkbox;
+            checkbox.addEventListener("change", updateCompletionStatus);
             
             const noteInput = document.createElement("input");
             noteInput.type = "text";
@@ -85,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
             noteInput.style.marginLeft = "10px";
             noteInput.style.flex = "1";
             notes[test] = noteInput;
+            noteInput.addEventListener("input", updateCompletionStatus);
             
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + test));
@@ -105,12 +132,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const computerName = infoContainer.textContent.split("Device/Public IP:")[1]?.trim() || "Unknown";
+        const qaName = nameInput.value.trim() || "Unknown QA";
+        const completionPercentage = completionStatus.textContent;
         
         doc.setFont("helvetica");
         doc.setFontSize(10);
+        doc.text(`QA Name: ${qaName}`, 10, y);
+        y += 7;
         doc.text(`Date: ${currentDate}    Time: ${currentTime}`, 10, y);
         y += 7;
         doc.text(`Device/Public IP: ${computerName}`, 10, y);
+        y += 10;
+        doc.text(completionPercentage, 10, y);
         y += 10;
 
         doc.setFontSize(14);
