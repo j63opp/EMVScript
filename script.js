@@ -67,7 +67,14 @@ document.addEventListener("DOMContentLoaded", function () {
         sectionDiv.innerHTML = `<h2>${section.category}</h2>`;
 
         section.tests.forEach(test => {
+            const container = document.createElement("div");
+            container.style.display = "flex";
+            container.style.justifyContent = "space-between";
+            container.style.alignItems = "center";
+
             const label = document.createElement("label");
+            label.style.flex = "1";
+            
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkboxes[test] = checkbox;
@@ -75,12 +82,15 @@ document.addEventListener("DOMContentLoaded", function () {
             const noteInput = document.createElement("input");
             noteInput.type = "text";
             noteInput.placeholder = "Add notes here";
+            noteInput.style.marginLeft = "10px";
+            noteInput.style.flex = "1";
             notes[test] = noteInput;
             
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + test));
-            sectionDiv.appendChild(label);
-            sectionDiv.appendChild(noteInput);
+            container.appendChild(label);
+            container.appendChild(noteInput);
+            sectionDiv.appendChild(container);
             sectionDiv.appendChild(document.createElement("br"));
         });
 
