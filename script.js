@@ -80,21 +80,45 @@ document.addEventListener("DOMContentLoaded", function () {
     infoContainer.style.borderRadius = "5px";
     document.body.insertBefore(infoContainer, checklistContainer);
 
+    // Function to fetch public IP with fallback APIs
+    async function fetchPublicIP() {
+        const apiUrls = [
+            'https://api.ipify.org?format=json', // IPv4 by default
+            'https://api4.ipify.org?format=json', // Explicitly IPv4
+            'https://ipv4.seeip.org/json'         // Another IPv4 API
+        ];
+
+        for (const url of apiUrls) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Network response was not ok");
+                const data = await response.json();
+                return data.ip || "Unable to fetch public IP";
+            } catch (error) {
+                console.error(`Error fetching public IP from ${url}:`, error);
+            }
+        }
+        return "Unable to fetch public IP";
+    }
+
     // Update the info container with date, time, and public IP
     async function updateInfo() {
+        // Update date and time immediately
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
-        let publicIP = "Unknown";
-
-        try {
-            const response = await fetch('https://api64.ipify.org?format=json');
-            const data = await response.json();
-            publicIP = data.ip;
-        } catch (error) {
-            console.error("Error fetching public IP:", error);
-        }
-
         const qaName = nameInput.value.trim() || "Not provided";
+
+        // Display date, time, and QA name immediately
+        infoContainer.innerHTML = `
+            <p><strong>Date:</strong> ${currentDate} <strong>Time:</strong> ${currentTime}</p>
+            <p><strong>Device/Public IP:</strong> Loading...</p>
+            <p><strong>QA Name:</strong> ${qaName}</p>
+        `;
+
+        // Fetch public IP with fallback APIs
+        const publicIP = await fetchPublicIP();
+
+        // Update the info container with the public IP
         infoContainer.innerHTML = `
             <p><strong>Date:</strong> ${currentDate} <strong>Time:</strong> ${currentTime}</p>
             <p><strong>Device/Public IP:</strong> ${publicIP}</p>
@@ -139,7 +163,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        const percentage = ((completedItems / totalItems) * 100).toFixed(2);
+        const percentage = (
+            (completedItems / totalItems) * 100
+        ).toFixed(2);
         progressBar.style.width = `${percentage}%`;
     }
 
@@ -224,7 +250,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentTime = new Date().toLocaleTimeString();
         const publicIP = infoContainer.textContent.split("Device/Public IP:")[1]?.split("QA Name:")[0].trim() || "Unable to fetch public IP";
         const qaName = nameInput.value.trim() || "Not provided";
-        const completionPercentage = ((Object.values(checkboxes).filter(checkbox => checkbox.checked).length / Object.keys(checkboxes).length) * 100).toFixed(2);
+        const completionPercentage = (
+            (Object.values(checkboxes).filter(checkbox => checkbox.checked).length / 
+            Object.keys(checkboxes).length) * 100
+        ).toFixed(2);
 
         doc.setFont("helvetica");
         doc.setFontSize(10);
