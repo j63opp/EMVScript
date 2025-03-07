@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create the download button
     const downloadButton = document.createElement("button");
     downloadButton.textContent = "Download PDF";
-    downloadButton.disabled = true;
+    downloadButton.disabled = false;
     downloadButton.style.padding = "10px";
     downloadButton.style.fontSize = "16px";
     downloadButton.style.backgroundColor = "#007bff";
@@ -79,6 +79,13 @@ document.addEventListener("DOMContentLoaded", function () {
     infoContainer.style.border = "1px solid #ddd";
     infoContainer.style.borderRadius = "5px";
     document.body.insertBefore(infoContainer, checklistContainer);
+
+    // Create an error message element
+    const errorMessage = document.createElement("div");
+    errorMessage.id = "error-message";
+    errorMessage.style.color = "red";
+    errorMessage.style.marginBottom = "10px";
+    document.body.insertBefore(errorMessage, inputButtonContainer); // Add it before the input/button container
 
     // Function to fetch public IP with fallback APIs
     async function fetchPublicIP() {
@@ -138,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
     progressBarContainer.style.backgroundColor = "#f3f3f3";
     progressBarContainer.style.borderRadius = "10px";
     progressBarContainer.style.marginTop = "10px";
+    progressBarContainer.style.position = "relative"; // Required for positioning the text
 
     const progressBar = document.createElement("div");
     progressBar.id = "progress-bar";
@@ -146,7 +154,21 @@ document.addEventListener("DOMContentLoaded", function () {
     progressBar.style.borderRadius = "10px";
     progressBar.style.width = "0%";
 
+    // Create a text element for the percentage
+    const progressText = document.createElement("div");
+    progressText.id = "progress-text";
+    progressText.style.position = "absolute";
+    progressText.style.top = "50%";
+    progressText.style.left = "10px"; // Left-justify the text
+    progressText.style.transform = "translateY(-50%)"; // Center vertically
+    progressText.style.color = "#000"; // Black text for visibility
+    progressText.style.fontSize = "12px";
+    progressText.style.fontWeight = "bold";
+    progressText.style.zIndex = "1"; // Ensure text is above the progress bar
+    progressText.textContent = "0%";
+
     progressBarContainer.appendChild(progressBar);
+    progressBarContainer.appendChild(progressText);
     document.body.insertBefore(progressBarContainer, checklistContainer);
 
     // Track completion status
@@ -163,10 +185,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        const percentage = (
+        const completionPercentage = (
             (completedItems / totalItems) * 100
         ).toFixed(2);
-        progressBar.style.width = `${percentage}%`;
+
+        progressBar.style.width = `${completionPercentage}%`;
+        progressText.textContent = `${completionPercentage}%`; // Update the percentage text
     }
 
     // Render the checklist
@@ -237,8 +261,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Generate the PDF
     function generatePDF() {
+        console.log("Generate PDF button clicked"); // Debug log
+
+        // Validate QA Name
+        const qaName = nameInput.value.trim();
+        console.log("QA Name:", qaName); // Debug log
+
+        if (!qaName) {
+            console.log("QA Name is empty"); // Debug log
+            errorMessage.textContent = "Please enter a QA Name before downloading the PDF.";
+            return; // Stop further execution
+        } else {
+            errorMessage.textContent = ""; // Clear error message if QA Name is entered
+        }
+
+        // Validate checklist
         if (!validateChecklist()) {
-            alert("Please add notes for failed tests before generating the PDF.");
+            errorMessage.textContent = "Please add notes for failed tests before generating the PDF.";
             return;
         }
 
@@ -249,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const publicIP = infoContainer.textContent.split("Device/Public IP:")[1]?.split("QA Name:")[0].trim() || "Unable to fetch public IP";
-        const qaName = nameInput.value.trim() || "Not provided";
         const completionPercentage = (
             (Object.values(checkboxes).filter(checkbox => checkbox.checked).length / 
             Object.keys(checkboxes).length) * 100
@@ -283,6 +321,11 @@ document.addEventListener("DOMContentLoaded", function () {
             y += 5;
         });
 
-        doc.save("EMV_Testing_Checklist.pdf");
+        // Append date and time to the filename
+        const formattedDate = currentDate.replace(/\//g, "-"); // Replace slashes with dashes
+        const formattedTime = currentTime.replace(/:/g, "-"); // Replace colons with dashes
+        const fileName = `EMV_Testing_Checklist_${formattedDate}_${formattedTime}.pdf`;
+
+        doc.save(fileName); // Save the PDF with the updated filename
     }
 });
