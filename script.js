@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
     nameInput.addEventListener("input", updateInfo);
     updateInfo();
 
-    // Create a progress bar
+    // Create a progress bar container
     const progressBarContainer = document.createElement("div");
     progressBarContainer.id = "progress-bar-container";
     progressBarContainer.style.width = "100%";
@@ -146,13 +146,16 @@ document.addEventListener("DOMContentLoaded", function () {
     progressBarContainer.style.borderRadius = "10px";
     progressBarContainer.style.marginTop = "10px";
     progressBarContainer.style.position = "relative"; // Required for positioning the text
+    progressBarContainer.style.overflow = "hidden"; // Ensure text doesn't overflow
 
+    // Create the progress bar
     const progressBar = document.createElement("div");
     progressBar.id = "progress-bar";
     progressBar.style.height = "100%";
     progressBar.style.backgroundColor = "#007bff";
     progressBar.style.borderRadius = "10px";
     progressBar.style.width = "0%";
+    progressBar.style.position = "relative"; // Required for z-index
 
     // Create a text element for the percentage
     const progressText = document.createElement("div");
@@ -164,11 +167,14 @@ document.addEventListener("DOMContentLoaded", function () {
     progressText.style.color = "#000"; // Black text for visibility
     progressText.style.fontSize = "12px";
     progressText.style.fontWeight = "bold";
-    progressText.style.zIndex = "1"; // Ensure text is above the progress bar
+    progressText.style.zIndex = "2"; // Ensure text is above the progress bar
     progressText.textContent = "0%";
 
+    // Append the progress bar and text to the container
     progressBarContainer.appendChild(progressBar);
     progressBarContainer.appendChild(progressText);
+
+    // Add the progress bar container to the body
     document.body.insertBefore(progressBarContainer, checklistContainer);
 
     // Track completion status
