@@ -29,6 +29,18 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const checklistContainer = document.getElementById("checklist");
+    const infoContainer = document.createElement("div");
+    infoContainer.id = "info-container";
+    document.body.insertBefore(infoContainer, checklistContainer);
+
+    function updateInfo() {
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const computerName = window.navigator.userAgent;
+        infoContainer.innerHTML = `<p><strong>Date:</strong> ${currentDate} <strong>Time:</strong> ${currentTime}</p><p><strong>Device:</strong> ${computerName}</p>`;
+    }
+    updateInfo();
+
     const downloadButton = document.createElement("button");
     downloadButton.textContent = "Download PDF";
     downloadButton.addEventListener("click", generatePDF);
@@ -56,44 +68,33 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let y = 10;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 10;
 
-    // Get metadata
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    const computerName = window.navigator.userAgent;
-
-    // Debugging: Log to Console
-    console.log("Date:", currentDate);
-    console.log("Time:", currentTime);
-    console.log("Device:", computerName);
-
-    // Add to PDF
-    doc.text(`Date: ${currentDate} Time: ${currentTime}`, 10, y);
-    y += 7;
-    doc.text(`Device: ${computerName}`, 10, y);
-    y += 10;
-
-    doc.setFont("helvetica");
-    doc.text("EMV Application Testing Checklist", 10, y);
-    y += 10;
-
-    testCases.forEach(section => {
-        doc.text(section.category, 10, y);
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const computerName = window.navigator.userAgent;
+        
+        doc.text(`Date: ${currentDate} Time: ${currentTime}`, 10, y);
+        y += 7;
+        doc.text(`Device: ${computerName}`, 10, y);
         y += 10;
-        section.tests.forEach(test => {
-            const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]";
-            doc.text(`${checkboxMark} ${test}`, 15, y);
-            y += 7;
+
+        doc.setFont("helvetica");
+        doc.text("EMV Application Testing Checklist", 10, y);
+        y += 10;
+
+        testCases.forEach(section => {
+            doc.text(section.category, 10, y);
+            y += 10;
+            section.tests.forEach(test => {
+                const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]";
+                doc.text(`${checkboxMark} ${test}`, 15, y);
+                y += 7;
+            });
+            y += 5;
         });
-        y += 5;
-    });
-
-    doc.save("EMV_Testing_Checklist.pdf");
-}
-
 
         doc.save("EMV_Testing_Checklist.pdf");
     }
