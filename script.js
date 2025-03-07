@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const computerName = publicIP;
         infoContainer.innerHTML = `
             <p><strong>Date:</strong> ${currentDate} <strong>Time:</strong> ${currentTime}</p>
-            <p><strong>Device/Public IP:</strong> ${publicIP}</p>
+            <p><strong>Device/Public IP:</strong> ${computerName}</p>
         `;
     }
     updateInfo();
