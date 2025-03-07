@@ -40,6 +40,16 @@ document.addEventListener("DOMContentLoaded", function () {
     nameInput.style.marginBottom = "10px";
     document.body.prepend(nameInput);
 
+    const downloadButton = document.createElement("button");
+    downloadButton.textContent = "Download PDF";
+    downloadButton.disabled = true;
+    downloadButton.addEventListener("click", generatePDF);
+    document.body.appendChild(downloadButton);
+
+    nameInput.addEventListener("input", function () {
+        downloadButton.disabled = nameInput.value.trim() === "";
+    });
+
     async function updateInfo() {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
@@ -60,11 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
     }
     updateInfo();
-
-    const downloadButton = document.createElement("button");
-    downloadButton.textContent = "Download PDF";
-    downloadButton.addEventListener("click", generatePDF);
-    document.body.appendChild(downloadButton);
 
     const completionStatus = document.createElement("p");
     completionStatus.id = "completion-status";
@@ -132,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
         const computerName = infoContainer.textContent.split("Device/Public IP:")[1]?.trim() || "Unknown";
-        const qaName = nameInput.value.trim() || "Unknown QA";
+        const qaName = nameInput.value.trim();
         const completionPercentage = completionStatus.textContent;
         
         doc.setFont("helvetica");
