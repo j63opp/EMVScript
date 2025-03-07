@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <p><strong>Device/Public IP:</strong> ${computerName}</p>
         `;
     }
+    updateInfo();
+
     const nameInput = document.createElement("input");
     nameInput.type = "text";
     nameInput.placeholder = "Enter QA Name";
@@ -68,8 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
     nameInput.addEventListener("input", function () {
         downloadButton.disabled = nameInput.value.trim() === "";
     });
-    updateInfo();
-
     const completionStatus = document.createElement("p");
     completionStatus.id = "completion-status";
     document.body.appendChild(completionStatus);
