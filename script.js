@@ -29,35 +29,38 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const checklistContainer = document.getElementById("checklist");
-
-    // Create and display date/time/device info
     const infoContainer = document.createElement("div");
     infoContainer.id = "info-container";
-    document.body.prepend(infoContainer); // Ensure it appears at the top
+    document.body.prepend(infoContainer);
 
-    function updateInfo() {
+    async function updateInfo() {
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
-        const computerName = window.navigator.userAgent;
-
-        console.log("Date:", currentDate);
-        console.log("Time:", currentTime);
-        console.log("Device:", computerName);
-
+        let publicIP = "Unknown";
+        
+        try {
+            const response = await fetch('https://api64.ipify.org?format=json');
+            const data = await response.json();
+            publicIP = data.ip;
+        } catch (error) {
+            console.error("Error fetching public IP:", error);
+        }
+        
+        const computerName = publicIP;
         infoContainer.innerHTML = `
             <p><strong>Date:</strong> ${currentDate} <strong>Time:</strong> ${currentTime}</p>
-            <p><strong>Device:</strong> ${computerName}</p>
+            <p><strong>Device/Public IP:</strong> ${computerName}</p>
         `;
     }
     updateInfo();
 
-    // Add download button
     const downloadButton = document.createElement("button");
     downloadButton.textContent = "Download PDF";
     downloadButton.addEventListener("click", generatePDF);
     document.body.appendChild(downloadButton);
 
     const checkboxes = {};
+    const notes = {};
 
     testCases.forEach(section => {
         const sectionDiv = document.createElement("div");
@@ -68,10 +71,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkboxes[test] = checkbox;
-
+            
+            const noteInput = document.createElement("input");
+            noteInput.type = "text";
+            noteInput.placeholder = "Add notes here";
+            notes[test] = noteInput;
+            
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + test));
             sectionDiv.appendChild(label);
+            sectionDiv.appendChild(noteInput);
             sectionDiv.appendChild(document.createElement("br"));
         });
 
@@ -85,31 +94,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const currentDate = new Date().toLocaleDateString();
         const currentTime = new Date().toLocaleTimeString();
-        const computerName = window.navigator.userAgent;
-
-        console.log("Generating PDF with:", currentDate, currentTime, computerName);
-
-        // Add date/time and device info to PDF
+        const computerName = infoContainer.textContent.split("Device/Public IP:")[1]?.trim() || "Unknown";
+        
         doc.setFont("helvetica");
         doc.setFontSize(10);
         doc.text(`Date: ${currentDate}    Time: ${currentTime}`, 10, y);
         y += 7;
-        doc.text(`Device: ${computerName}`, 10, y);
+        doc.text(`Device/Public IP: ${computerName}`, 10, y);
         y += 10;
 
-        // Title
         doc.setFontSize(14);
         doc.text("EMV Application Testing Checklist", 10, y);
         y += 10;
 
-        // Checklist content
         doc.setFontSize(12);
         testCases.forEach(section => {
             doc.text(section.category, 10, y);
             y += 7;
             section.tests.forEach(test => {
                 const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]";
-                doc.text(`${checkboxMark} ${test}`, 15, y);
+                const noteText = notes[test].value ? ` - Notes: ${notes[test].value}` : "";
+                doc.text(`${checkboxMark} ${test}${noteText}`, 15, y);
                 y += 6;
             });
             y += 5;
