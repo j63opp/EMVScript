@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let completedItems = 0;
         
         Object.keys(checkboxes).forEach(test => {
-            if (checkboxes[test].checked || notes[test].value.trim() !== "") {
+            if (checkboxes[test].checked) {
                 completedItems++;
             }
         });
