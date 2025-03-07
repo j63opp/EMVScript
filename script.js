@@ -56,24 +56,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let y = 10;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 10;
 
-    doc.setFont("helvetica"); // Ensure a consistent font
-    doc.text("EMV Application Testing Checklist", 10, y);
-    y += 10;
-
-    testCases.forEach(section => {
-        doc.text(section.category, 10, y);
+        doc.setFont("helvetica");
+        doc.text("EMV Application Testing Checklist", 10, y);
         y += 10;
-        section.tests.forEach(test => {
-            const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]"; // Use ASCII checkboxes
-            doc.text(`${checkboxMark} ${test}`, 15, y);
-            y += 7;
+
+        testCases.forEach(section => {
+            doc.text(section.category, 10, y);
+            y += 10;
+            section.tests.forEach(test => {
+                const checkboxMark = checkboxes[test].checked ? "[X]" : "[ ]";
+                doc.text(`${checkboxMark} ${test}`, 15, y);
+                y += 7;
+            });
+            y += 5;
         });
-        y += 5;
-    });
+
+        // Add date, time, and computer name at the bottom
+        const currentDate = new Date().toLocaleDateString();
+        const currentTime = new Date().toLocaleTimeString();
+        const computerName = window.navigator.userAgent; // Limited browser info as hostname isn't accessible via JS
+        
+        doc.text(`Date: ${currentDate} Time: ${currentTime}`, 10, 280);
+        doc.text(`Device: ${computerName}`, 10, 287);
 
         doc.save("EMV_Testing_Checklist.pdf");
     }
